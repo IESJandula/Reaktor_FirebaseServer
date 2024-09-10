@@ -134,7 +134,7 @@
 						<configuration>
 							<classifier>jar-with-dependencies</classifier>
 							<mainClass>
-								es.iesjandula.firebase_server.ReaktorFirebaseServerApplication</mainClass>
+								es.iesjandula.reaktor_firebase_server.ReaktorFirebaseServerApplication</mainClass>
 						</configuration>
 					</execution>
 				</executions>
