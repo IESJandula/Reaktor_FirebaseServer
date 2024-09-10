@@ -8,7 +8,7 @@ logging:
     level:
         root: INFO
     file:
-        name: /tmp/reaktor_printersServer.log
+        name: /tmp/reaktor_firebaseserver.log
         max-size: 1MB
         max-history: 10
         total-size-cap: 10MB
