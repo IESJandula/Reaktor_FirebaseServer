@@ -18,3 +18,5 @@ reaktor:
   privateKeyFile: ${PRIVATE_KEY_FILE}
   googleCredentialsFile: ${GOOGLE_CREDENTIALS_FILE}
   urlCors: https://somos.iesjandula.es
+  firebase_server_url: https://somos.iesjandula.es
+  uidFile: ${UID_FILE}
