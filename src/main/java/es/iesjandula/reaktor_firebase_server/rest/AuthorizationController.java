@@ -28,8 +28,6 @@ import com.google.firebase.cloud.FirestoreClient;
 import es.iesjandula.reaktor_firebase_server.utils.Constants;
 import es.iesjandula.reaktor_firebase_server.utils.FirebaseServerException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.SecureDigestAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
