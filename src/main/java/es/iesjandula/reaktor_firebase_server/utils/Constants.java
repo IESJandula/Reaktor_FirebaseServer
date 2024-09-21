@@ -27,24 +27,10 @@ public class Constants
 	/** Error - Error el UID de usuario no existe */
 	public static final int ERR_USER_NOT_EXISTS_IN_COLLECTION	  = 104 ;
 	
+	/** Error - Error en la importación de usuarios */
+	public static final int ERR_USERS_IMPORTS					  = 105 ;
 	
-	/*********************************************************/
-	/**************** Colección - Usuarios *******************/
-	/*********************************************************/
-	
-	/** Collection name - Usuarios */
-	public static final String COLLECTION_NAME_USUARIOS 			   = "usuarios";
-	
-	/** Collection Usuarios - Attribute Email */	
-	public static final String COLLECTION_USUARIOS_ATTRIBUTE_EMAIL 	   = "email" ;
-	
-	/** Collection Usuarios - Attribute Nombre */	
-	public static final String COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE    = "nombre" ;
-	
-	/** Collection Usuarios - Attribute Apellidos */	
-	public static final String COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS = "apellidos" ;
-	
-	/** Collection Usuarios - Attribute Roles */
-	public static final String COLLECTION_USUARIOS_ATTRIBUTE_ROLES 	   = "roles" ;
+	/** Error - Error en la autorización del usuario en el login */
+	public static final int ERR_USER_AUTHORIZATION				  = 106 ;
 }
 

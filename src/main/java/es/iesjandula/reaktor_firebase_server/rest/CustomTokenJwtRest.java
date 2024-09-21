@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
 
+import es.iesjandula.base.base_server.utils.BaseServerConstants;
 import es.iesjandula.reaktor_firebase_server.utils.Constants;
 import es.iesjandula.reaktor_firebase_server.utils.FirebaseServerException;
 import io.jsonwebtoken.Jwts;
@@ -32,8 +33,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/firebase")
-public class AuthorizationController
+@RequestMapping("/firebase/jwt")
+public class CustomTokenJwtRest
 {
 	@Value("${reaktor.privateKeyFile}")
 	private String privateKeyFile ;
@@ -55,7 +56,7 @@ public class AuthorizationController
 
             // Obtenemos datos adicionales del usuario desde Firestore
             Firestore firestore = FirestoreClient.getFirestore() ;
-            DocumentSnapshot document = firestore.collection(Constants.COLLECTION_NAME_USUARIOS).document(uid).get().get();
+            DocumentSnapshot document = firestore.collection(BaseServerConstants.COLLECTION_NAME_USUARIOS).document(uid).get().get();
 
             // Comprobamos que el fichero existe
             if (!document.exists())
@@ -72,10 +73,10 @@ public class AuthorizationController
             // Creamos claims personalizados basados en la información obtenida
             Map<String, Object> customClaims = new HashMap<String, Object>() ;
             
-            customClaims.put(Constants.COLLECTION_USUARIOS_ATTRIBUTE_EMAIL, 	userData.get(Constants.COLLECTION_USUARIOS_ATTRIBUTE_EMAIL));
-            customClaims.put(Constants.COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE, 	userData.get(Constants.COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE));
-            customClaims.put(Constants.COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS, userData.get(Constants.COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS));
-            customClaims.put(Constants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES, 	userData.get(Constants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES));
+            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_EMAIL, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_EMAIL));
+            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE));
+            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS, userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS));
+            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES));
 
             // Firmamos el JWT con la clave privada
             String tokenJwt = Jwts.builder().subject(uid)
