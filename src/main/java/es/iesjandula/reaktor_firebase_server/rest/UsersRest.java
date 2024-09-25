@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus ;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -32,9 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.cloud.FirestoreClient;
 
-import es.iesjandula.base.base_server.firebase.AuthorizationService;
 import es.iesjandula.base.base_server.utils.BaseServerConstants;
-import es.iesjandula.base.base_server.utils.BaseServerException;
 import es.iesjandula.reaktor_firebase_server.models.Usuario;
 import es.iesjandula.reaktor_firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor_firebase_server.utils.Constants;
@@ -47,19 +46,14 @@ import lombok.extern.slf4j.Slf4j;
 public class UsersRest
 {
 	@Autowired
-	private AuthorizationService authorizationService ;
-	
-	@Autowired
 	private IUsuarioRepository usuarioRepository ;
 	
+    @PreAuthorize("hasRole('" + BaseServerConstants.ROLE_ADMINISTRADOR + "')")
 	@RequestMapping(method = RequestMethod.POST, value = "/import")
-    public ResponseEntity<?> importarUsuarios(@RequestHeader("Authorization") String authorizationHeader, @RequestParam("file") MultipartFile file)
+    public ResponseEntity<?> importarUsuarios(@RequestParam("file") MultipartFile file)
 	{
         try
         {
-			// Primero autorizamos la petición
-            this.authorizationService.autorizarPeticion(authorizationHeader, BaseServerConstants.ROLE_ADMINISTRADOR) ;
-
             // Validamos que el archivo no esté vacío
             if (file.isEmpty())
             {
@@ -77,10 +71,6 @@ public class UsersRest
 
             // Devolvemos el 200
             return ResponseEntity.ok().build() ;
-        }
-        catch (BaseServerException baseServerException)
-        {
-        	return ResponseEntity.status(HttpStatus.FORBIDDEN).body(baseServerException.getBodyExceptionMessage()) ;
         }
         catch (FirebaseServerException firebaseServerException)
         {
