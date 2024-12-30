@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.UserRecord;
+import com.google.firebase.auth.FirebaseToken;
 import com.google.firebase.cloud.FirestoreClient;
 
 import es.iesjandula.base.base_server.utils.BaseServerConstants;
@@ -40,15 +40,20 @@ public class CustomTokenJwtRest
 	private String privateKeyFile ;
 	
     @RequestMapping(method = RequestMethod.POST, value = "/getCustomToken")
-    public ResponseEntity<?> obtenerTokenPersonalizado(@RequestHeader(name = "uid") String uid)
+    public ResponseEntity<?> obtenerTokenPersonalizado(@RequestHeader("Authorization") String authorizationHeader)
     {
         try
         {
-            // Verificamos si el UID existe en Firebase Authentication
-            UserRecord userRecord = FirebaseAuth.getInstance().getUser(uid) ;
-            if (userRecord == null)
+		    // Eliminamos el prefijo "Bearer " del encabezado de autorización para obtener el token JWT limpio
+		    String token = authorizationHeader.replace("Bearer ", "") ;
+			
+			// Verificamos el token con Firebase
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(token) ;
+        	
+            // Verificamos si el decode token existe en Firebase Authentication
+            if (decodedToken == null)
             {
-                String errorString = "El UID " + uid + " no existe en Firebase" ;
+                String errorString = "El Token " + decodedToken + " no existe en Firebase" ;
                 
                 log.error(errorString, errorString) ;
         		throw new FirebaseServerException(Constants.ERR_UID_USER_NOT_EXISTS_IN_FIREBASE, errorString) ;
@@ -56,12 +61,15 @@ public class CustomTokenJwtRest
 
             // Obtenemos datos adicionales del usuario desde Firestore
             Firestore firestore = FirestoreClient.getFirestore() ;
-            DocumentSnapshot document = firestore.collection(BaseServerConstants.COLLECTION_NAME_USUARIOS).document(uid).get().get();
-
+            
+            DocumentSnapshot document = firestore.collection(BaseServerConstants.COLLECTION_NAME_USUARIOS)
+            									 .document(decodedToken.getUid())
+            									 .get()
+            									 .get();
             // Comprobamos que el fichero existe
             if (!document.exists())
             {
-                String errorString = "El documento del usuario con " + uid + " no existe en la colección de Firebase" ;
+                String errorString = "El documento del usuario con " + decodedToken.getUid() + " no existe en la colección de Firebase" ;
                 
                 log.error(errorString, errorString) ;
         		throw new FirebaseServerException(Constants.ERR_USER_NOT_EXISTS_IN_COLLECTION, errorString) ;
@@ -79,7 +87,7 @@ public class CustomTokenJwtRest
             customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES));
 
             // Firmamos el JWT con la clave privada
-            String tokenJwt = Jwts.builder().subject(uid)
+            String tokenJwt = Jwts.builder().subject(decodedToken.getUid())
 						                    .claims(customClaims)
 						                    .signWith(this.obtenerClavePrivada(), Jwts.SIG.RS256)
 						                    .compact() ;
