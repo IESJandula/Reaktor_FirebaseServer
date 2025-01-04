@@ -1,9 +1,9 @@
-package es.iesjandula.reaktor_firebase_server.models;
+package es.iesjandula.reaktor.firebase_server.models;
 
 import java.util.Arrays;
 import java.util.List;
 
-import es.iesjandula.reaktor_firebase_server.utils.Constants;
+import es.iesjandula.reaktor.firebase_server.utils.Constants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

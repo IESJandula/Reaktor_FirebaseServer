@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor_firebase_server.utils;
+package es.iesjandula.reaktor.firebase_server.utils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor_firebase_server.config;
+package es.iesjandula.reaktor.firebase_server.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

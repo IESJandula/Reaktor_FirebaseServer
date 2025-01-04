@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor_firebase_server.rest;
+package es.iesjandula.reaktor.firebase_server.rest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.iesjandula.reaktor.base.utils.BaseConstants;
-import es.iesjandula.reaktor_firebase_server.models.Aplicacion;
-import es.iesjandula.reaktor_firebase_server.models.Usuario;
-import es.iesjandula.reaktor_firebase_server.repository.IAplicacionRepository;
-import es.iesjandula.reaktor_firebase_server.repository.IUsuarioRepository;
-import es.iesjandula.reaktor_firebase_server.utils.Constants;
-import es.iesjandula.reaktor_firebase_server.utils.FirebaseServerException;
+import es.iesjandula.reaktor.firebase_server.models.Aplicacion;
+import es.iesjandula.reaktor.firebase_server.models.Usuario;
+import es.iesjandula.reaktor.firebase_server.repository.IAplicacionRepository;
+import es.iesjandula.reaktor.firebase_server.repository.IUsuarioRepository;
+import es.iesjandula.reaktor.firebase_server.utils.Constants;
+import es.iesjandula.reaktor.firebase_server.utils.FirebaseServerException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor_firebase_server.config;
+package es.iesjandula.reaktor.firebase_server.config;
 
 import java.io.FileInputStream;
 import java.io.IOException;

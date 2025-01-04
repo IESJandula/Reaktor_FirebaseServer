@@ -1,4 +1,4 @@
-package es.iesjandula.reaktor_firebase_server.utils;
+package es.iesjandula.reaktor.firebase_server.utils;
 
 /**
  * @author Francisco Manuel Benítez Chico
