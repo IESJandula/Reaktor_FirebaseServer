@@ -3,6 +3,7 @@ package es.iesjandula.reaktor_firebase_server.models;
 import java.util.Arrays;
 import java.util.List;
 
+import es.iesjandula.reaktor_firebase_server.utils.Constants;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -42,7 +43,7 @@ public class Usuario
      */
     public List<String> getRolesList()
     {
-        return Arrays.asList(this.roles.split(",")) ;
+        return Arrays.asList(this.roles.split(Constants.STRING_COMA)) ;
     }
 
     /**
@@ -67,7 +68,7 @@ public class Usuario
 	            // Si no es el último, añadimos una coma
 	            if (i < rolesList.size() - 1)
 	            {
-	                rolesStringBuilder.append(",") ;
+	                rolesStringBuilder.append(Constants.STRING_COMA) ;
 	            }
 	        }
 	

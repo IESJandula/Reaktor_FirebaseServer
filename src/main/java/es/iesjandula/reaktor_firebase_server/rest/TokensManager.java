@@ -11,7 +11,9 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -19,13 +21,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.cloud.firestore.DocumentSnapshot;
-import com.google.cloud.firestore.Firestore;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.google.firebase.cloud.FirestoreClient;
 
-import es.iesjandula.base.base_server.utils.BaseServerConstants;
+import es.iesjandula.reaktor.base.utils.BaseConstants;
+import es.iesjandula.reaktor_firebase_server.models.Aplicacion;
+import es.iesjandula.reaktor_firebase_server.models.Usuario;
+import es.iesjandula.reaktor_firebase_server.repository.IAplicacionRepository;
+import es.iesjandula.reaktor_firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor_firebase_server.utils.Constants;
 import es.iesjandula.reaktor_firebase_server.utils.FirebaseServerException;
 import io.jsonwebtoken.Jwts;
@@ -33,14 +36,20 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-@RequestMapping("/firebase/jwt")
-public class CustomTokenJwtRest
+@RequestMapping("/firebase/token")
+public class TokensManager
 {
 	@Value("${reaktor.privateKeyFile}")
 	private String privateKeyFile ;
 	
-    @RequestMapping(method = RequestMethod.POST, value = "/getCustomToken")
-    public ResponseEntity<?> obtenerTokenPersonalizado(@RequestHeader("Authorization") String authorizationHeader)
+	@Autowired
+	private IUsuarioRepository usuarioRepository ;
+	
+	@Autowired
+	private IAplicacionRepository aplicacionRepository ;
+	
+    @RequestMapping(method = RequestMethod.POST, value = "/user")
+    public ResponseEntity<?> obtenerTokenPersonalizadoUsuario(@RequestHeader("Authorization") String authorizationHeader)
     {
         try
         {
@@ -58,33 +67,28 @@ public class CustomTokenJwtRest
                 log.error(errorString, errorString) ;
         		throw new FirebaseServerException(Constants.ERR_UID_USER_NOT_EXISTS_IN_FIREBASE, errorString) ;
             }
-
-            // Obtenemos datos adicionales del usuario desde Firestore
-            Firestore firestore = FirestoreClient.getFirestore() ;
             
-            DocumentSnapshot document = firestore.collection(BaseServerConstants.COLLECTION_NAME_USUARIOS)
-            									 .document(decodedToken.getUid())
-            									 .get()
-            									 .get();
-            // Comprobamos que el fichero existe
-            if (!document.exists())
+            Optional<Usuario> optionalUsuario = this.usuarioRepository.findById(decodedToken.getEmail()) ;
+
+            // Comprobamos que el usuario existe
+            if (!optionalUsuario.isPresent())
             {
-                String errorString = "El documento del usuario con " + decodedToken.getUid() + " no existe en la colección de Firebase" ;
+                String errorString = "El usuario " + decodedToken.getEmail() + " no existe en la BBDD" ;
                 
                 log.error(errorString, errorString) ;
         		throw new FirebaseServerException(Constants.ERR_USER_NOT_EXISTS_IN_COLLECTION, errorString) ;
             }
 
-            // Obtenemos la información de cada campo en el mapa
-            Map<String, Object> userData = document.getData() ;
+            // Obtenemos la información del usuario
+            Usuario usuario = optionalUsuario.get() ;
 
             // Creamos claims personalizados basados en la información obtenida
             Map<String, Object> customClaims = new HashMap<String, Object>() ;
             
-            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_EMAIL, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_EMAIL));
-            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_NOMBRE));
-            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS, userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_APELLIDOS));
-            customClaims.put(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES, 	  userData.get(BaseServerConstants.COLLECTION_USUARIOS_ATTRIBUTE_ROLES));
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_EMAIL, 	  usuario.getEmail()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_NOMBRE, 	  usuario.getNombre()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_APELLIDOS, usuario.getApellidos()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_ROLES, 	  usuario.getRolesList()) ;
 
             // Firmamos el JWT con la clave privada
             String tokenJwt = Jwts.builder().subject(decodedToken.getUid())
@@ -104,10 +108,62 @@ public class CustomTokenJwtRest
 	    {
 	    	FirebaseServerException firebaseServerException = 
 	    			new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, 
- 												Constants.ERR_GENERIC_EXCEPTION_MSG + "obtenerTokenPersonalizado",
+ 												Constants.ERR_GENERIC_EXCEPTION_MSG + "obtenerTokenPersonalizadoUsuario",
  												exception) ;
 	        
-			log.error(Constants.ERR_GENERIC_EXCEPTION_MSG + "obtenerTokenPersonalizado", firebaseServerException) ;
+			log.error(Constants.ERR_GENERIC_EXCEPTION_MSG + "obtenerTokenPersonalizadoUsuario", firebaseServerException) ;
+			return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage()) ;
+	    }
+    }
+    
+    @RequestMapping(method = RequestMethod.POST, value = "/app")
+    public ResponseEntity<?> obtenerTokenPersonalizadoAplicacion(@RequestHeader("X-CLIENT-ID") String clientId)
+    {
+        try
+        {
+            // Buscamos la aplicación por clientId
+            Optional<Aplicacion> optionalAplicacion = this.aplicacionRepository.findById(clientId) ;
+            
+            // Comprobamos que la aplicación existe
+            if (!optionalAplicacion.isPresent())
+            {
+                String errorString = "La aplicación con " + clientId + " no existe en la BBDD" ;
+                
+                log.error(errorString, errorString) ;
+        		throw new FirebaseServerException(Constants.ERR_APP_NOT_EXISTS_IN_DATABASE, errorString) ;
+            }
+            
+            // Obtenemos la información de la aplicación
+            Aplicacion aplicacion = optionalAplicacion.get() ;
+
+            // Creamos claims personalizados basados en la información obtenida
+            Map<String, Object> customClaims = new HashMap<String, Object>() ;
+            
+            customClaims.put(BaseConstants.JWT_ATTR_APLICACIONES_ATTRIBUTE_NOMBRE, aplicacion.getNombre()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_APLICACIONES_ATTRIBUTE_ROLES, aplicacion.getRolesList()) ;
+
+            // Firmamos el JWT con la clave privada
+            String tokenJwt = Jwts.builder().subject(clientId)
+						                    .claims(customClaims)
+						                    .signWith(this.obtenerClavePrivada(), Jwts.SIG.RS256)
+						                    .compact() ;
+
+	        // Devolvemos el resultado
+	        return ResponseEntity.ok().body(tokenJwt) ;
+
+        }
+        catch (FirebaseServerException firebaseServerServerException)
+        {
+			return ResponseEntity.status(500).body(firebaseServerServerException.getBodyExceptionMessage()) ;
+        }
+	    catch (Exception exception) 
+	    {
+	    	FirebaseServerException firebaseServerException = 
+	    			new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, 
+ 												Constants.ERR_GENERIC_EXCEPTION_MSG + "obtenerTokenPersonalizadoAplicacion",
+ 												exception) ;
+	        
+			log.error(Constants.ERR_GENERIC_EXCEPTION_MSG + "obtenerTokenPersonalizadoAplicacion", firebaseServerException) ;
 			return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage()) ;
 	    }
     }

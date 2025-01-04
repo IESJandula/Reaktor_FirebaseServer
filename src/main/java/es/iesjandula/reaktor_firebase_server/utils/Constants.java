@@ -5,6 +5,8 @@ package es.iesjandula.reaktor_firebase_server.utils;
  */
 public class Constants
 {
+	public static final String STRING_COMA = "," ;
+	
 	/*********************************************************/
 	/*********************** Errores *************************/
 	/*********************************************************/
@@ -32,5 +34,16 @@ public class Constants
 	
 	/** Error - Error en la autorización del usuario en el login */
 	public static final int ERR_USER_AUTHORIZATION				  = 106 ;
+	
+	/** Error - Error la APP no existe en la BBDD propia */
+	public static final int ERR_APP_NOT_EXISTS_IN_DATABASE        = 107 ;
+	
+	/** Error - Error la APP no existe en la colección de Firebase */
+	public static final int ERR_APP_NOT_EXISTS_IN_COLLECTION      = 108 ;
+	
+	/** Error - Error en la importación de aplicaciones */
+	public static final int ERR_APPS_IMPORTS					  = 109 ;
+	
+	
 }
 
