@@ -65,7 +65,7 @@ public class TokensManager
                 String errorString = "El Token " + decodedToken + " no existe en Firebase" ;
                 
                 log.error(errorString, errorString) ;
-        		throw new FirebaseServerException(Constants.ERR_UID_USER_NOT_EXISTS_IN_FIREBASE, errorString) ;
+        		throw new FirebaseServerException(Constants.ERR_USER_AUTHORIZATION, errorString) ;
             }
             
             Optional<Usuario> optionalUsuario = this.usuarioRepository.findById(decodedToken.getEmail()) ;
@@ -73,10 +73,11 @@ public class TokensManager
             // Comprobamos que el usuario existe
             if (!optionalUsuario.isPresent())
             {
-                String errorString = "El usuario " + decodedToken.getEmail() + " no existe en la BBDD" ;
-                
-                log.error(errorString, errorString) ;
-        		throw new FirebaseServerException(Constants.ERR_USER_NOT_EXISTS_IN_COLLECTION, errorString) ;
+    			String errorString = "El usuario " + decodedToken.getEmail() + " no está dado de alta. " +
+    								 "¿Estás seguro que lo hiciste con el dominio g.educaand.es o hablaste con el TDE?" ;
+    			
+    			log.error(errorString) ;
+    			throw new FirebaseServerException(Constants.ERR_USER_AUTHORIZATION, errorString) ;  
             }
 
             // Obtenemos la información del usuario
@@ -130,7 +131,7 @@ public class TokensManager
                 String errorString = "La aplicación con " + clientId + " no existe en la BBDD" ;
                 
                 log.error(errorString, errorString) ;
-        		throw new FirebaseServerException(Constants.ERR_APP_NOT_EXISTS_IN_DATABASE, errorString) ;
+        		throw new FirebaseServerException(Constants.ERR_APPS_AUTHORIZATION, errorString) ;
             }
             
             // Obtenemos la información de la aplicación
