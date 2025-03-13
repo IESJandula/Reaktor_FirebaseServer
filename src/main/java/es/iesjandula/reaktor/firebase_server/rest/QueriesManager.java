@@ -48,6 +48,7 @@ public class QueriesManager
         }
     }
     
+    @PreAuthorize("hasRole('" + BaseConstants.ROLE_ADMINISTRADOR + "')")
 	@RequestMapping(method = RequestMethod.GET, value = "/user")
     public ResponseEntity<?> obtenerInfoUsuario(@RequestHeader(value = "email") String email)
 	{
@@ -55,7 +56,7 @@ public class QueriesManager
         {
         	// Obtenemos la información de los usuarios
 			DtoInfoUsuario dtoInfoUsuario = this.usuarioRepository.obtenerInfoUsuario(email) ;
-            System.out.println(dtoInfoUsuario);
+            
             // Devolvemos el 200
             return ResponseEntity.ok().body(dtoInfoUsuario) ;
         }
