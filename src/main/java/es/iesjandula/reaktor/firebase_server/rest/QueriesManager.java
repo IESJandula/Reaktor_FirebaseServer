@@ -48,7 +48,7 @@ public class QueriesManager
         }
     }
     
-    @PreAuthorize("hasRole('" + BaseConstants.ROLE_ADMINISTRADOR + "')")
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_ADMINISTRADOR + "', '" + BaseConstants.ROLE_DIRECCION + "')")
 	@RequestMapping(method = RequestMethod.GET, value = "/user")
     public ResponseEntity<?> obtenerInfoUsuario(@RequestHeader(value = "email") String email)
 	{
