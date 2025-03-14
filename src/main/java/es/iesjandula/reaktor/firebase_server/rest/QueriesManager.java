@@ -54,6 +54,9 @@ public class QueriesManager
 	{
         try
         {
+        	// Logging de entrada al método
+        	log.info("Se ha pedido información del usuario con email {}", email) ;
+        	
         	// Obtenemos la información de los usuarios
 			DtoInfoUsuario dtoInfoUsuario = this.usuarioRepository.obtenerInfoUsuario(email) ;
             
