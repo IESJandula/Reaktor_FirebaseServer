@@ -1,7 +1,7 @@
 
 # FirebaseServer
 
-El proyecto `FirebaseServer` es un microservicio encargado de gestionar interacciones con Firebase de otros microservicios del sistema REAKTOR. Este proyecto depende de [BaseServer](https://github.com/IESJandula/Base_Server/) para las configuraciones y utilidades genéricas.
+El proyecto `FirebaseServer` es un microservicio encargado de gestionar las interacciones con otros microservicios del sistema REAKTOR ya que se encargará de asignar tokens JWT personalizados. Este proyecto depende de [BaseServer](https://github.com/IESJandula/Reaktor_BaseServer) para las configuraciones y utilidades genéricas.
 
 ## Descripción de los Servicios y Componentes
 
@@ -11,10 +11,12 @@ El proyecto `FirebaseServer` es un microservicio encargado de gestionar interacc
 ### FirebaseConfig
 `FirebaseConfig` gestiona la configuración de Firebase, incluyendo la inicialización del SDK de Firebase Admin con las credenciales adecuadas. Este componente carga el archivo JSON de configuración de la cuenta de servicio de Firebase y lo utiliza para interactuar con Firestore, Authentication, y otros servicios de Firebase.
 
-### AuthorizationController
-`AuthorizationController` es el controlador REST encargado de manejar las solicitudes relacionadas con la autorización de usuarios en el sistema. Proporciona el siguiente endpoint:
+### TokensManager
+`TokensManager` es el controlador REST encargado de manejar las solicitudes relacionadas con la autorización de usuarios en el sistema. Proporciona los siguientes endpoints:
 
-- **`/getCustomToken`**: Genera un token JWT personalizado para un usuario autenticado en Firebase, utilizando su UID. Este token puede ser utilizado por clientes para autenticar usuarios en otros servicios que requieren la autenticación de Firebase.
+- **`/user`**: Genera un token JWT personalizado para un usuario autenticado en Firebase, utilizando su correo electrónico.
+
+- **`/app`**: Genera un token JWT personalizado para una aplicación autenticada en Firebase, utilizando un identificador único. 
 
 ## Variables de Configuración
 
@@ -48,14 +50,6 @@ Las variables anotadas con `@Value` en este proyecto deben configurarse adecuada
    - **Cómo configurarlo**: Define los orígenes permitidos, por ejemplo: `http://localhost:5173, http://192.168.1.209:5173, http://192.168.1.181:5173, http://192.168.1.137:5173`.
    - **Dónde almacenarlo**: En el archivo `application.yml`.
 
-5. **`reaktor.firebase_server_url`**: URL del servidor Firebase.
-   - **Cómo configurarlo**: Define la URL del servidor Firebase, por ejemplo: `http://localhost:8083`.
-   - **Dónde almacenarlo**: En el archivo `application.yml`.
-
-6. **`reaktor.uidFile`**: Ruta al archivo que contiene el UID del usuario CLIENTE_IMPRESORA.
-   - **Cómo obtenerlo**: Crea un archivo de texto llamado `uid_file.txt` que contenga el UID del usuario que tenga este role.
-   - **Dónde almacenarlo**: Colócalo en `C:\claves`.
-
 Asegúrate de que todos estos archivos estén correctamente ubicados y accesibles por el microservicio para garantizar su funcionamiento.
 
 
@@ -69,40 +63,16 @@ Para crear un archivo `.p12` (archivo PKCS#12) para la autenticación, sigue est
    ```
 2. **Convierte el archivo PEM a PKCS#12**:
    ```bash
-   openssl pkcs12 -export -out firebase-server.p12 -inkey private_key.pem -in cert.pem -name "firebase-server"
+   openssl pkcs12 -export -out apijandula.p12 -inkey private_key.pem -in cert.pem -name "apijandula"
    ```
-3. **Dónde almacenarlo**: Guarda el archivo `firebase-server.p12` en la carpeta `C:\claves` o en un directorio seguro accesible por el microservicio.
+3. **Dónde almacenarlo**: Guarda el archivo `apijandula.p12` en la carpeta `src/main/resources`.
 
 ## Dependencias
 
 Este proyecto depende de [BaseServer](https://github.com/IESJandula/Base_Server/) para funcionalidades básicas como la autorización, almacenamiento de sesión y actualización de JARs.
 
-## Creación de Elementos en la Colección de Firebase
+## Creación de usuarios
 
-Para que el sistema funcione correctamente, es necesario crear una colección en Firebase llamada `usuarios` donde se almacenarán los datos de los usuarios. Sigue los siguientes pasos para crear elementos en esta colección:
+Para que el sistema funcione correctamente, es necesario tantos usuarios como personas quieras que accedan a la aplicación. Normalmente, en entorno local solo te bastará con añadir una fila con tu usuario. Para ello, necesitarás hacer un INSERT en la tabla usuario con tu correo electrónico, tu nombre y apellidos, y los roles que quieras tener. En cuanto a los roles, para poder visualizar todas las opciones de la aplicación, se aconseja que el valor sea `PROFESOR,DIRECCION,ADMINISTRADOR`
 
-1. **Accede a la consola de Firebase**:
-   Ve a [Firebase Console](https://console.firebase.google.com/) e inicia sesión con tu cuenta de Google.
-
-2. **Selecciona tu proyecto**:
-   Haz clic en tu proyecto para abrir el panel de control.
-
-3. **Ve a Firestore Database**:
-   En el menú de la izquierda, selecciona **Firestore Database** y haz clic en **Crear base de datos** si aún no lo has hecho. Asegúrate de seleccionar el modo de producción.
-
-4. **Crear la colección `usuarios`**:
-   - Haz clic en **Iniciar colección** y escribe `usuarios` como nombre de la colección.
-   - Haz clic en **Siguiente** para añadir el primer documento.
-
-5. **Añadir un documento**:
-   - Define el **ID del documento**: Este será el UID del usuario, que puedes obtener desde la pestaña de Firebase Authentication.
-   - Añade los siguientes campos al documento:
-     - **email** (tipo: `string`): El correo electrónico del usuario.
-     - **nombre** (tipo: `string`): El nombre del usuario.
-     - **apellidos** (tipo: `string`): Los apellidos del usuario.
-     - **roles** (tipo: `array`): Lista de roles asignados al usuario, por ejemplo: `["PROFESOR", "DIRECCIÓN"]`.
-
-6. **Guardar el documento**:
-   Haz clic en **Guardar** para crear el documento en la colección `usuarios`.
-
-Repite estos pasos para cada usuario que necesites agregar al sistema.
+Repite este paso para cada usuario que necesites agregar al sistema.
