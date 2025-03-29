@@ -9,10 +9,6 @@ spring:
       maximum-pool-size: 5
 server:
   port: 8083
-  ssl:
-    key-store: classpath:apijandula.p12
-    key-store-password: ${SSL_KEY_STORE_PASSWORD}
-    keyStoreType: PKCS12
 logging:
     level:
         root: INFO
