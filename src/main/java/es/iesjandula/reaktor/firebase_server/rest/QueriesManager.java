@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.iesjandula.reaktor.base.security.models.DtoUsuarioBase;
 import es.iesjandula.reaktor.base.utils.BaseConstants;
-import es.iesjandula.reaktor.firebase_server.dto.DtoInfoUsuario;
 import es.iesjandula.reaktor.firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor.firebase_server.utils.FirebaseServerException;
 import lombok.extern.slf4j.Slf4j;
@@ -24,17 +24,17 @@ public class QueriesManager
 	@Autowired
 	private IUsuarioRepository usuarioRepository ;
 	
-    @PreAuthorize("hasRole('" + BaseConstants.ROLE_ADMINISTRADOR + "')")
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_ADMINISTRADOR + "', '" + BaseConstants.ROLE_DIRECCION + "')")
 	@RequestMapping(method = RequestMethod.GET, value = "/users")
     public ResponseEntity<?> obtenerInfoUsuarios()
 	{
         try
         {
         	// Obtenemos la información de los usuarios
-			List<DtoInfoUsuario> dtoInfoUsuario = this.usuarioRepository.obtenerInfoUsuarios() ;
+			List<DtoUsuarioBase> dtoUsuarioBase = this.usuarioRepository.obtenerInfoUsuarios() ;
             
             // Devolvemos el 200
-            return ResponseEntity.ok().body(dtoInfoUsuario) ;
+            return ResponseEntity.ok().body(dtoUsuarioBase) ;
         }
         catch (Exception exception)
         {
@@ -58,10 +58,10 @@ public class QueriesManager
         	log.info("Se ha pedido información del usuario con email {}", email) ;
         	
         	// Obtenemos la información de los usuarios
-			DtoInfoUsuario dtoInfoUsuario = this.usuarioRepository.obtenerInfoUsuario(email) ;
+			DtoUsuarioBase dtoUsuarioBase = this.usuarioRepository.obtenerInfoUsuario(email) ;
             
             // Devolvemos el 200
-            return ResponseEntity.ok().body(dtoInfoUsuario) ;
+            return ResponseEntity.ok().body(dtoUsuarioBase) ;
         }
         catch (Exception exception)
         {

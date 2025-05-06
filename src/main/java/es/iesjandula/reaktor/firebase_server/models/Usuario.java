@@ -37,6 +37,10 @@ public class Usuario
 	/** Atributo - Lista de roles */
 	@Column
 	private String roles ;
+
+	/** Atributo - Departamento */
+	@Column
+	private String departamento ;
 	
     /**
      * @return lista de roles deserializada

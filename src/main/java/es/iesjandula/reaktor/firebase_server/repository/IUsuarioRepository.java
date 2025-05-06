@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import es.iesjandula.reaktor.firebase_server.dto.DtoInfoUsuario;
+import es.iesjandula.reaktor.base.security.models.DtoUsuarioBase;
 import es.iesjandula.reaktor.firebase_server.models.Usuario;
 
 /**
@@ -16,12 +16,12 @@ import es.iesjandula.reaktor.firebase_server.models.Usuario;
 @Repository
 public interface IUsuarioRepository extends JpaRepository<Usuario, String>
 {
-	@Query("SELECT new es.iesjandula.reaktor.firebase_server.dto.DtoInfoUsuario(u.email, u.nombre, u.apellidos) "   +
+	@Query("SELECT new es.iesjandula.reaktor.base.security.models.DtoUsuarioBase(u.email, u.nombre, u.apellidos, u.departamento, u.departamento) "   +
 		   "FROM Usuario u")
-	List<DtoInfoUsuario> obtenerInfoUsuarios() ;
+	List<DtoUsuarioBase> obtenerInfoUsuarios() ;
 	
 	
-	@Query("SELECT new es.iesjandula.reaktor.firebase_server.dto.DtoInfoUsuario(u.email, u.nombre, u.apellidos) "   +
+	@Query("SELECT new es.iesjandula.reaktor.base.security.models.DtoUsuarioBase(u.email, u.nombre, u.apellidos, u.departamento) "   +
 			   "FROM Usuario u where u.email = :email")
-	DtoInfoUsuario obtenerInfoUsuario(@Param("email") String email);
+	DtoUsuarioBase obtenerInfoUsuario(@Param("email") String email);
 }
