@@ -131,7 +131,7 @@ public class ImportsManager
 	{
 		String[] fields = linea.split(",") ;
 		
-		if (fields.length != 4)
+		if (fields.length != 5)
 		{
 			String errorString = "Hay una fila del CSV que no posee el número de elementos esperados: " + linea ;
 			
@@ -140,10 +140,11 @@ public class ImportsManager
 		}
 		
 		// Parseamos cada uno de los campos
-		String email 	   = fields[0] ;
-		String nombre 	   = fields[1] ;
-		String apellidos   = fields[2] ;
-		List<String> roles = Arrays.asList(fields[3].split("\\|")) ;
+		String email 	    = fields[0] ;
+		String nombre 	    = fields[1] ;
+		String apellidos    = fields[2] ;
+		String departamento = fields[3] ;
+		List<String> roles = Arrays.asList(fields[4].split("\\|")) ;
 		
 		// Validamos roles del usuario
 		for (String role : roles)
@@ -164,6 +165,7 @@ public class ImportsManager
 		usuario.setEmail(email) ;
 		usuario.setNombre(nombre) ;
 		usuario.setApellidos(apellidos) ;
+		usuario.setDepartamento(departamento) ;
 		usuario.setRolesList(roles) ;
 		
 		// Devolvemos una instancia del usuario
