@@ -16,7 +16,7 @@ import es.iesjandula.reaktor.firebase_server.models.Usuario;
 @Repository
 public interface IUsuarioRepository extends JpaRepository<Usuario, String>
 {
-	@Query("SELECT new es.iesjandula.reaktor.base.security.models.DtoUsuarioBase(u.email, u.nombre, u.apellidos, u.departamento, u.departamento) "   +
+	@Query("SELECT new es.iesjandula.reaktor.base.security.models.DtoUsuarioBase(u.email, u.nombre, u.apellidos, u.departamento) "   +
 		   "FROM Usuario u")
 	List<DtoUsuarioBase> obtenerInfoUsuarios() ;
 	
