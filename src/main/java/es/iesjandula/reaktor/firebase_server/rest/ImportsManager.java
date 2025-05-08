@@ -87,6 +87,9 @@ public class ImportsManager
 		{
 			inputStreamReader = new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")) ;
 			bufferedReader = new BufferedReader(inputStreamReader) ;
+
+			// Borrar todos los profesores menos los administradores
+			this.usuarioRepository.borrarProfesoresConRolNoAdministrador() ;
 			
 			// Nos saltamos la primera línea de cabecera
 			String linea = bufferedReader.readLine() ;
