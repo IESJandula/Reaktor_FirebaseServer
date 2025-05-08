@@ -3,6 +3,7 @@ package es.iesjandula.reaktor.firebase_server.rest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -84,7 +85,7 @@ public class ImportsManager
 		
 		try
 		{
-			inputStreamReader = new InputStreamReader(file.getInputStream()) ;
+			inputStreamReader = new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")) ;
 			bufferedReader = new BufferedReader(inputStreamReader) ;
 			
 			// Nos saltamos la primera línea de cabecera
@@ -220,7 +221,7 @@ public class ImportsManager
 		
 		try
 		{
-			inputStreamReader = new InputStreamReader(file.getInputStream()) ;
+			inputStreamReader = new InputStreamReader(file.getInputStream(), Charset.forName("UTF-8")) ;
 			bufferedReader = new BufferedReader(inputStreamReader) ;
 			
 			// Nos saltamos la primera línea de cabecera
