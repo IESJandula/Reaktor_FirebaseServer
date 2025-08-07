@@ -37,9 +37,17 @@ public class Aplicacion
     @Column
     private String roles ;
     
-    private int notif_hoy ;
+    private int notif_hoy_calendar ;
     
-    private int notif_max ;
+    private int notif_max_calendar ;
+    
+    private int notif_hoy_email ;
+    
+    private int notif_max_email ;
+    
+    private int notif_hoy_web ;
+    
+    private int notif_max_web ;
     
     @OneToMany(mappedBy = "aplicacion")
     private List<NotificacionCalendar> notificaciones_calendars ;

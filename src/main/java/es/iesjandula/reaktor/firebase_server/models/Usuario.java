@@ -1,5 +1,6 @@
 package es.iesjandula.reaktor.firebase_server.models;
 
+import java.sql.Date;
 import java.util.Arrays;
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class Usuario
 	/** Atributo - Departamento */
 	@Column
 	private String departamento ;
+	
+	private Date fecha_nacimiento ;
 	
     /**
      * @return lista de roles deserializada
