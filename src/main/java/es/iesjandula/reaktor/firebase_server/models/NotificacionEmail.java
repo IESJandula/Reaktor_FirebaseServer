@@ -25,7 +25,7 @@ public class NotificacionEmail
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id ;
 	
-	private LocalDate fecha_creacion ;
+	private LocalDate fechaCreacion ;
 	
 	private String asunto ;
 	

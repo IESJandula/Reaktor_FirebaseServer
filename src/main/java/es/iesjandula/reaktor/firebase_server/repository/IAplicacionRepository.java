@@ -12,7 +12,7 @@ import es.iesjandula.reaktor.firebase_server.models.Aplicacion;
 public interface IAplicacionRepository extends JpaRepository<Aplicacion, String>
 {
 
-	Optional<Aplicacion> findByClientIdAndNombre(String clientId, String nombre) ;
+	Aplicacion findByClientIdAndNombre(String clientId, String nombre) ;
 	
 }
 
