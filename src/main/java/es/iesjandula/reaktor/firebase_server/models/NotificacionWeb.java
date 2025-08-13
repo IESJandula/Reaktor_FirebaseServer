@@ -1,6 +1,5 @@
 package es.iesjandula.reaktor.firebase_server.models;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -33,13 +32,13 @@ public class NotificacionWeb
 	
 	private String texto ;
 	
-	private Date fecha_fin ;
+	private LocalDate fechaFin ;
 	
 	private String roles ;
 	
 	private int nivel ;
 	
-	private Date fecha_inicio ;
+	private LocalDate fechaInicio ;
 	
 	private String titulo ;
 	

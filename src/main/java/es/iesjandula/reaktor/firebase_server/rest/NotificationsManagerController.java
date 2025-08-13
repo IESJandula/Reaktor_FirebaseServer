@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.iesjandula.reaktor.base.utils.BaseConstants;
 import es.iesjandula.reaktor.firebase_server.dtos.NotificacionesEnviadasDto;
 import es.iesjandula.reaktor.firebase_server.models.Aplicacion;
 import es.iesjandula.reaktor.firebase_server.repository.IAplicacionRepository;
@@ -38,12 +39,15 @@ public class NotificationsManagerController
 	private INotificacionWebRepository notificacionWebRepository ;
 	
 	@RequestMapping(method = RequestMethod.GET, value = "notificacionesEnviadas")
+	@PreAuthorize("hasRole('" + BaseConstants.ROLE_APLICACION + "')")
 	public ResponseEntity<?> obtenerResumen(@RequestHeader("nombre") String nombre, @RequestHeader("client_id") String clientId)
 	{
 		
-		try {
+		try 
+		{
 			Aplicacion aplicacion = aplicacionRepository.findByClientIdAndNombre(clientId, nombre) ;
-			if (aplicacion == null) {
+			if (aplicacion == null) 
+			{
 				String errorMessage = "Aplicación no encontrada con ese client_id y nombre" ;
 				log.error(errorMessage) ;
 				throw new FirebaseServerException(400, errorMessage) ;
@@ -68,7 +72,8 @@ public class NotificationsManagerController
 			
 			log.info("Notificaciones recibidas correctamente") ;
 			return ResponseEntity.status(200).body(notificacionesEnviadasDto) ;
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			String errorMessage = "Error inesperado al procesar la solicitud." ;
 			log.error(errorMessage, e) ;
 			FirebaseServerException firebaseServerException = new FirebaseServerException(500, errorMessage, e) ;
@@ -78,7 +83,7 @@ public class NotificationsManagerController
 	}
 	
 	@RequestMapping(method = RequestMethod.POST, value = "/actualizarMaximos")
-	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('" + BaseConstants.ROLE_ADMINISTRADOR + "')")
 	public ResponseEntity<?> configurarMaximosNotificaciones(
 			@RequestHeader("client_id") String clientId,
             @RequestHeader("nombre") String nombre,
@@ -87,10 +92,12 @@ public class NotificationsManagerController
             @RequestHeader("max_calendar") int maxCalendar)
 	{
 		
-		try {
+		try 
+		{
 			
 			Aplicacion aplicacion = aplicacionRepository.findByClientIdAndNombre(clientId, nombre) ;
-			if (aplicacion == null) {
+			if (aplicacion == null) 
+			{
 				String errorMessage = "Aplicación no encontrada con ese client_id y nombre" ;
 				log.error(errorMessage) ;
 				throw new FirebaseServerException(400, errorMessage) ;
@@ -105,7 +112,8 @@ public class NotificationsManagerController
 			log.info("Máximos de notificaciones actualizados para la aplicación: {}", nombre) ;
 			return ResponseEntity.status(204).body("Máximos de notificaciones actualizados para la aplicación") ;
 			
-		} catch (Exception e) {
+		} catch (Exception e) 
+		{
 			String errorMessage = "Error inesperado al actualizar máximos de aplicaciones" ;
 			log.error(errorMessage, e) ;
 			FirebaseServerException firebaseServerException = new FirebaseServerException(500, errorMessage, e) ;

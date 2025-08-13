@@ -1,6 +1,7 @@
 package es.iesjandula.reaktor.firebase_server.repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,5 +12,7 @@ public interface INotificacionWebRepository extends JpaRepository<NotificacionWe
 {
 
 	int countByAplicacionAndFechaCreacion(Aplicacion aplicacion, LocalDate fechaCreacion);
+	
+	List<NotificacionWeb> findByFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(LocalDate fechaInicio, LocalDate fechaFin) ;
 	
 }
