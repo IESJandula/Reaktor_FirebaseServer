@@ -8,9 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Entidad para las aplicaciones/servicios clientes (como PrintersClient)
@@ -18,9 +15,6 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "aplicacion")
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 public class Aplicacion
 {
 
@@ -37,6 +31,82 @@ public class Aplicacion
     private String roles ;
 
     /**
+     * Constructor por defecto
+     */
+    public Aplicacion()
+    {
+        super();
+    }
+
+    /**
+     * Constructor con parámetros
+     * @param clientId
+     * @param nombre
+     * @param roles
+     */
+    public Aplicacion(String clientId, String nombre, String roles)
+    {
+        this.clientId = clientId;
+        this.nombre = nombre;
+        this.roles = roles;
+    }
+    
+    /**
+     * Getter para el atributo clientId
+     * @return el clientId
+     */
+    public String getClientId()
+    {
+        return this.clientId;
+    }
+
+    /**
+     * Getter para el atributo nombre
+     * @return el nombre
+     */
+    public String getNombre()
+    {
+        return this.nombre;
+    }
+
+    /**
+     * Getter para el atributo roles
+     * @return los roles
+     */
+    public String getRoles()
+    {
+        return this.roles;
+    }
+
+    /**
+     * Setter para el atributo clientId
+     * @param clientId el clientId
+     */
+    public void setClientId(String clientId)
+    {
+        this.clientId = clientId;
+    }
+
+    /**
+     * Setter para el atributo nombre
+     * @param nombre el nombre
+     */
+    public void setNombre(String nombre)
+    {
+        this.nombre = nombre;
+    }
+
+    /**
+     * Setter para el atributo roles
+     * @param roles los roles
+     */
+    public void setRoles(String roles)
+    {
+        this.roles = roles;
+    }
+
+    /**
+     * Getter para el atributo rolesList
      * @return lista de roles deserializada
      */
     public List<String> getRolesList()
@@ -45,22 +115,27 @@ public class Aplicacion
     }
 
     /**
+     * Setter para el atributo rolesList
      * Setter para establecer los roles desde una lista.
      * 
      * @param rolesList lista de roles
      */
-    public void setRolesList(List<String> rolesList) {
+    public void setRolesList(List<String> rolesList)
+    {
         this.roles = null;
 
-        if (rolesList != null && !rolesList.isEmpty()) {
+        if (rolesList != null && !rolesList.isEmpty())
+        {
             StringBuilder rolesStringBuilder = new StringBuilder();
 
-            for (int i = 0; i < rolesList.size(); i++) {
+            for (int i = 0; i < rolesList.size(); i++)
+            {
                 // Añadimos el rol
                 rolesStringBuilder.append(rolesList.get(i));
 
                 // Si no es el último, añadimos una coma
-                if (i < rolesList.size() - 1) {
+                if (i < rolesList.size() - 1)
+                {
                     rolesStringBuilder.append(Constants.STRING_COMA);
                 }
             }

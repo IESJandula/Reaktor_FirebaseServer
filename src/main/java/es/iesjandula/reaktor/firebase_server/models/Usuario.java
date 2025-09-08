@@ -8,18 +8,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * @author Francisco Manuel Benítez Chico
  */
 @Entity
 @Table(name = "usuario")
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
 public class Usuario
 {
 	/** Atributo - Email */
@@ -41,7 +35,122 @@ public class Usuario
 	/** Atributo - Departamento */
 	@Column
 	private String departamento ;
+
+	/**
+	 * Constructor por defecto
+	 */
+	public Usuario()
+	{
+		super();
+	}
 	
+	/**
+	 * Constructor con parámetros
+	 * @param email
+	 * @param nombre
+	 * @param apellidos
+	 * @param roles
+	 * @param departamento
+	 */
+	public Usuario(String email, String nombre, String apellidos, String roles, String departamento)
+	{
+		this.email = email;
+		this.nombre = nombre;
+		this.apellidos = apellidos;
+		this.roles = roles;
+		this.departamento = departamento;
+	}		
+
+	/**
+	 * Getter para el atributo email
+	 * @return el email
+	 */
+	public String getEmail()
+	{
+		return this.email;
+	}
+
+	/**
+	 * Getter para el atributo nombre
+	 * @return el nombre
+	 */
+	public String getNombre()
+	{
+		return this.nombre;
+	}
+
+	/**
+	 * Getter para el atributo apellidos
+	 * @return los apellidos
+	 */
+	public String getApellidos()
+	{
+		return this.apellidos;
+	}
+
+	/**
+	 * Getter para el atributo roles
+	 * @return los roles
+	 */
+	public String getRoles()
+	{
+		return this.roles;
+	}
+
+	/**
+	 * Getter para el atributo departamento
+	 * @return el departamento
+	 */
+	public String getDepartamento()
+	{
+		return this.departamento;
+	}
+	
+	/**
+	 * Setter para el atributo email
+	 * @param email el email
+	 */
+	public void setEmail(String email)
+	{
+		this.email = email;
+	}
+
+	/**
+	 * Setter para el atributo nombre
+	 * @param nombre el nombre
+	 */
+	public void setNombre(String nombre)
+	{
+		this.nombre = nombre;
+	}
+
+	/**
+	 * Setter para el atributo apellidos
+	 * @param apellidos los apellidos
+	 */
+	public void setApellidos(String apellidos)
+	{
+		this.apellidos = apellidos;
+	}
+
+	/**
+	 * Setter para el atributo roles
+	 * @param roles los roles
+	 */
+	public void setRoles(String roles)
+	{
+		this.roles = roles;
+	}
+
+	/**
+	 * Setter para el atributo departamento
+	 * @param departamento el departamento
+	 */
+	public void setDepartamento(String departamento)
+	{
+		this.departamento = departamento;
+	}
+
     /**
      * @return lista de roles deserializada
      */
