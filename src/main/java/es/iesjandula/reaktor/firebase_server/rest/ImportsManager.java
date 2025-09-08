@@ -24,13 +24,19 @@ import es.iesjandula.reaktor.firebase_server.repository.IAplicacionRepository;
 import es.iesjandula.reaktor.firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor.firebase_server.utils.Constants;
 import es.iesjandula.reaktor.firebase_server.utils.FirebaseServerException;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/firebase/imports")
 public class ImportsManager
 {
+	/**
+	 * Logger of the class
+	 */
+	private static final Logger log = LoggerFactory.getLogger(ImportsManager.class);
+
 	@Autowired
 	private IUsuarioRepository usuarioRepository ;
 	

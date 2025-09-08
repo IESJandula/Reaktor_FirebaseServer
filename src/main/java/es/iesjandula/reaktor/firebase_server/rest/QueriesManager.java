@@ -14,13 +14,18 @@ import es.iesjandula.reaktor.base.security.models.DtoUsuarioBase;
 import es.iesjandula.reaktor.base.utils.BaseConstants;
 import es.iesjandula.reaktor.firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor.firebase_server.utils.FirebaseServerException;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 @RestController
 @RequestMapping("/firebase/queries")
 public class QueriesManager
 {
+	/**
+	 * Logger of the class
+	 */
+	private static final Logger log = LoggerFactory.getLogger(QueriesManager.class);
+
 	@Autowired
 	private IUsuarioRepository usuarioRepository ;
 	

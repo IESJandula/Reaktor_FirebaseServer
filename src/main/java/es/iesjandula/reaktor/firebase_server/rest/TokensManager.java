@@ -32,13 +32,18 @@ import es.iesjandula.reaktor.firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor.firebase_server.utils.Constants;
 import es.iesjandula.reaktor.firebase_server.utils.FirebaseServerException;
 import io.jsonwebtoken.Jwts;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
 @RestController
 @RequestMapping("/firebase/token")
 public class TokensManager
 {
+	/**
+	 * Logger of the class
+	 */
+	private static final Logger log = LoggerFactory.getLogger(TokensManager.class);
+
 	@Value("${reaktor.privateKeyFile}")
 	private String privateKeyFile ;
 	
