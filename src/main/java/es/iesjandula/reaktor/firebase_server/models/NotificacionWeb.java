@@ -36,11 +36,9 @@ public class NotificacionWeb
 	
 	private String roles ;
 	
-	private int nivel ;
+	private String nivel ;
 	
 	private LocalDate fechaInicio ;
-	
-	private String titulo ;
 	
 	@ManyToOne
 	@JoinColumn(name = "aplicacion_client_id", nullable = false)

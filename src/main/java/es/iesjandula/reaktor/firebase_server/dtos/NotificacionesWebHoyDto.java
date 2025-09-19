@@ -10,8 +10,12 @@ import lombok.NoArgsConstructor;
 public class NotificacionesWebHoyDto 
 {
 
-	private String texto ;
-	private int nivel ;
-	private String imagen ;
+	private Long id ;
+	private String texto;
+    private String nivel;
+    private String imagen;
+    private String fechaInicio;
+    private String fechaFin;
+    private String roles;
 	
 }
