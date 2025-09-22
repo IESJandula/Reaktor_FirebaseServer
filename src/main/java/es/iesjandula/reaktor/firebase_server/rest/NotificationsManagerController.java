@@ -39,7 +39,7 @@ public class NotificationsManagerController
 	private INotificacionWebRepository notificacionWebRepository ;
 	
 	@RequestMapping(method = RequestMethod.GET, value = "notificacionesEnviadas")
-	@PreAuthorize("hasRole('" + BaseConstants.ROLE_APLICACION + "')")
+	@PreAuthorize("hasRole('" + BaseConstants.ROLE_DIRECCION + "')")
 	public ResponseEntity<?> obtenerResumen(@RequestHeader("nombre") String nombre, @RequestHeader("client_id") String clientId)
 	{
 		

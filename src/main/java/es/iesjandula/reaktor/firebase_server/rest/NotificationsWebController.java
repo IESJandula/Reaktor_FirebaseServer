@@ -111,6 +111,11 @@ public class NotificationsWebController
 			
 			List<NotificacionWeb> notificaciones = notificacionWebRepository.findByFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(hoy, hoy) ;
 			
+			if (notificaciones == null || notificaciones.isEmpty()) {
+	            log.info("No hay notificaciones hoy para el usuario {}", usuario);
+	            return ResponseEntity.status(200).body(List.of());
+	        }
+			
 			List<NotificacionesWebHoyDto> resultado = notificaciones.stream()
 					.map(n -> new NotificacionesWebHoyDto(
 								n.getId(),
