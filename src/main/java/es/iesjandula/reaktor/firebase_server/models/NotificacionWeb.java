@@ -1,6 +1,7 @@
 package es.iesjandula.reaktor.firebase_server.models;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -32,7 +33,11 @@ public class NotificacionWeb
 	
 	private String texto ;
 	
+	private LocalTime horaInicio ;
+	
 	private LocalDate fechaFin ;
+	
+	private LocalTime horaFin ;
 	
 	private String roles ;
 	

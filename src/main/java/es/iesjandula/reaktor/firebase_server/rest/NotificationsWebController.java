@@ -1,6 +1,8 @@
 package es.iesjandula.reaktor.firebase_server.rest;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,10 +42,12 @@ public class NotificationsWebController
 	public ResponseEntity<?> crearNotificacionWeb(
 	        @RequestHeader("client_id") String clientId,
 	        @RequestHeader("nombre") String nombre,
-	        @RequestHeader("fecha_inicio") String fechaInicio,
-	        @RequestHeader("fecha_fin") String fechaFin,
-	        @RequestHeader("roles") String roles,
 	        @RequestHeader("texto") String texto,
+	        @RequestHeader("fecha_inicio") String fechaInicio,
+	        @RequestHeader("hora_inicio") String horaInicio,
+	        @RequestHeader("fecha_fin") String fechaFin,
+	        @RequestHeader("hora_fin") String horaFin,
+	        @RequestHeader("roles") String roles,
 	        @RequestHeader("nivel") String nivel,
 	        @RequestHeader(value = "imagen", required = false) String imagen) 
 	{
@@ -55,28 +59,56 @@ public class NotificationsWebController
 	        {
 	            String errorMessage = "Aplicación no encontrada con ese client_id y nombre";
 	            log.error(errorMessage);
-	            throw new FirebaseServerException(400, errorMessage);
+	            throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_CREATION, errorMessage);
 	        }
 
-	        // ✅ Validar nivel
-	        if (!nivel.equalsIgnoreCase(Constants.NIVEL_GLOBAL) &&
-	            !nivel.equalsIgnoreCase(Constants.NIVEL_SECUNDARIO)) 
+	        // Validar nivel
+	        if (!nivel.equalsIgnoreCase(Constants.NIVEL_GLOBAL) && !nivel.equalsIgnoreCase(Constants.NIVEL_SECUNDARIO)) 
 	        {
 	            String errorMessage = "Nivel inválido. Solo se permiten: " 
 	                                  + Constants.NIVEL_GLOBAL + " o " 
 	                                  + Constants.NIVEL_SECUNDARIO;
-	            log.error(errorMessage);
-	            throw new FirebaseServerException(400, errorMessage);
+	            
+				log.error(errorMessage);
+	            throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_CREATION, errorMessage);
 	        }
+
+			// Validar los roles
+			if (roles == null || roles.isEmpty())
+			{
+				String errorMessage = "Roles inválidos. Nulos o vacíos" ;
+				
+				log.error(errorMessage);
+				throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_CREATION, errorMessage);
+			}
+			else
+			{
+				boolean roleEncontrado = roles.contains(BaseConstants.ROLE_ADMINISTRADOR) ||
+				                         roles.contains(BaseConstants.ROLE_DIRECCION)     ||
+										 roles.contains(BaseConstants.ROLE_PROFESOR) ;
+
+				if (!roleEncontrado)
+				{
+					String errorMessage = "Roles inválidos. Solo se permiten: " 
+	                                  + BaseConstants.ROLE_ADMINISTRADOR + " o " 
+	                                  + BaseConstants.ROLE_DIRECCION     + " o " 
+	                                  + BaseConstants.ROLE_PROFESOR ;
+
+					log.error(errorMessage);
+					throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_CREATION, errorMessage);
+				}
+			}
 
 	        NotificacionWeb notificacionWeb = new NotificacionWeb();
 	        notificacionWeb.setAplicacion(aplicacion);
 	        notificacionWeb.setFechaCreacion(LocalDate.now());
 	        notificacionWeb.setFechaInicio(LocalDate.parse(fechaInicio));
+	        notificacionWeb.setHoraInicio(LocalTime.parse(horaInicio));
 	        notificacionWeb.setFechaFin(LocalDate.parse(fechaFin));
+	        notificacionWeb.setHoraFin(LocalTime.parse(horaFin));
 	        notificacionWeb.setRoles(roles);
 	        notificacionWeb.setTexto(texto);
-	        notificacionWeb.setNivel(nivel.toUpperCase()); // ✅ asignación segura
+	        notificacionWeb.setNivel(nivel.toUpperCase()); // asignación segura
 
 	        if (imagen != null) 
 	        {
@@ -85,16 +117,19 @@ public class NotificationsWebController
 
 	        notificacionWebRepository.saveAndFlush(notificacionWeb);
 
-	        log.info("Notificación web creada correctamente");
-	        return ResponseEntity.status(201).body("Notificación web creada correctamente");
+	        return ResponseEntity.status(200).build() ;
 
-	    } 
-	    catch (Exception e) 
+	    }
+        catch (FirebaseServerException firebaseServerServerException)
+        {
+			return ResponseEntity.status(400).body(firebaseServerServerException.getBodyExceptionMessage()) ;
+        }
+	    catch (Exception exception) 
 	    {
 	        String errorMessage = "Error al crear la notificación web";
-	        log.error(errorMessage, e);
-	        FirebaseServerException firebaseServerException = 
-	            new FirebaseServerException(500, errorMessage, e);
+	        log.error(errorMessage, exception);
+	        
+			FirebaseServerException firebaseServerException =  new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, errorMessage, exception);
 	        return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage());
 	    }
 	}
@@ -103,40 +138,38 @@ public class NotificationsWebController
 	@RequestMapping(method = RequestMethod.GET, value = "/obtenerNotificacionesHoy")
 	public ResponseEntity<?> obtenerNotificacionHoy(@RequestHeader("usuario") String usuario)
 	{
-	
+	    List<NotificacionesWebHoyDto> resultado = new ArrayList<NotificacionesWebHoyDto>();
 		try 
 		{
-		
 			LocalDate hoy = LocalDate.now() ;
 			
 			List<NotificacionWeb> notificaciones = notificacionWebRepository.findByFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(hoy, hoy) ;
 			
-			if (notificaciones == null || notificaciones.isEmpty()) {
-	            log.info("No hay notificaciones hoy para el usuario {}", usuario);
-	            return ResponseEntity.status(200).body(List.of());
-	        }
-			
-			List<NotificacionesWebHoyDto> resultado = notificaciones.stream()
-					.map(n -> new NotificacionesWebHoyDto(
-								n.getId(),
-								n.getTexto(),
-						        n.getNivel(),
-						        extraerNombreImagen(n.getTexto()),
-						        n.getFechaInicio() != null ? n.getFechaInicio().toString() : null,
-						        n.getFechaFin() != null ? n.getFechaFin().toString() : null,
-						        n.getRoles() != null ? String.join(",", n.getRoles()) : null
+			if (notificaciones != null && !notificaciones.isEmpty())
+			{
+	        	resultado = notificaciones.stream()
+					                      .map(n -> new NotificacionesWebHoyDto(
+											   n.getId(),
+											   n.getTexto(),
+											   n.getNivel(),
+											   extraerNombreImagen(n.getTexto()),
+											   n.getFechaInicio(),
+											   n.getHoraInicio(),
+											   n.getFechaFin(),
+											   n.getHoraFin(),
+											   String.join(",", n.getRoles())
 							))
 							.collect(Collectors.toList()) ;
-			
-			log.info("Notificaciones para el usuario {} encontradas: {}", usuario, resultado.size()) ;
-			return ResponseEntity.status(200).body(resultado) ;
-			
-		} catch (Exception e) 
-		{
-			
+			}
+
+			return ResponseEntity.status(200).body(resultado) ;			
+		}
+		catch (Exception exception) 
+		{			
 			String errorMessage = "Error inesperado al obtener las notificaciones" ;
-			log.error(errorMessage, e) ;
-			FirebaseServerException firebaseServerException = new FirebaseServerException(500, errorMessage, e) ;
+			log.error(errorMessage, exception) ;
+
+			FirebaseServerException firebaseServerException = new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, errorMessage, exception) ;
 			return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage()) ;
 		
 		}
@@ -166,23 +199,26 @@ public class NotificationsWebController
             {
                 String errorMessage = "No se encontró la notificación con id: " + id;
                 log.error(errorMessage);
-                return ResponseEntity.status(404).body(errorMessage);
+
+                throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_DELETION, errorMessage);
             }
 
             // Eliminar
             notificacionWebRepository.delete(notificacion);
 
-            log.info("Notificación con id {} eliminada correctamente", id);
-            return ResponseEntity.status(200).body("Notificación eliminada correctamente");
+            return ResponseEntity.status(200).build() ;
         } 
-        catch (Exception e) 
+		catch (FirebaseServerException firebaseServerException)
+		{
+			return ResponseEntity.status(400).body(firebaseServerException.getBodyExceptionMessage()) ;
+		}
+        catch (Exception exception) 
         {
             String errorMessage = "Error al eliminar la notificación con id: " + id;
-            log.error(errorMessage, e);
-            FirebaseServerException firebaseServerException = new FirebaseServerException(500, errorMessage, e);
+            log.error(errorMessage, exception);
+
+            FirebaseServerException firebaseServerException = new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, errorMessage, exception);
             return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage());
         }
     }
-
-	
 }

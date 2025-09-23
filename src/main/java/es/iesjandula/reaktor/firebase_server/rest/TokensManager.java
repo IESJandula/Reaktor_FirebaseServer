@@ -103,7 +103,7 @@ public class TokensManager
         }
         catch (FirebaseServerException firebaseServerServerException)
         {
-			return ResponseEntity.status(500).body(firebaseServerServerException.getBodyExceptionMessage()) ;
+			return ResponseEntity.status(400).body(firebaseServerServerException.getBodyExceptionMessage()) ;
         }
 	    catch (Exception exception) 
 	    {
@@ -155,7 +155,7 @@ public class TokensManager
         }
         catch (FirebaseServerException firebaseServerServerException)
         {
-			return ResponseEntity.status(500).body(firebaseServerServerException.getBodyExceptionMessage()) ;
+			return ResponseEntity.status(400).body(firebaseServerServerException.getBodyExceptionMessage()) ;
         }
 	    catch (Exception exception) 
 	    {

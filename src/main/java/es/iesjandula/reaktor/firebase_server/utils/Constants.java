@@ -36,6 +36,10 @@ public class Constants
 	/** Error - Error en la importación de aplicaciones */
 	public static final int ERR_APPS_IMPORTS					  = 105 ;
 	
+	/** Error - Error en la creación de la notificación web */
+	public static final int ERR_NOTIFICATIONS_WEB_CREATION		  = 106 ;
 	
+	/** Error - Error en la eliminación de la notificación web */
+	public static final int ERR_NOTIFICATIONS_WEB_DELETION		  = 107 ;
 }
 
