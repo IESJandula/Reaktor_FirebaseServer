@@ -3,7 +3,6 @@ package es.iesjandula.reaktor.firebase_server.dtos;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -42,10 +41,10 @@ public class NotificacionesWebHoyDto
         this.texto       = texto;
         this.nivel       = nivel;
         this.imagen      = imagen;
-        this.fechaInicio = fechaInicio.toString();
-        this.horaInicio  = horaInicio.toString();
-        this.fechaFin    = fechaFin.toString();
-        this.horaFin     = horaFin.toString();
+        this.fechaInicio = fechaInicio != null ? fechaInicio.toString() : "";
+        this.horaInicio  = horaInicio != null ? horaInicio.toString() : "";
+        this.fechaFin    = fechaFin != null ? fechaFin.toString() : "";
+        this.horaFin     = horaFin != null ? horaFin.toString() : "";
         this.roles       = roles;
     }
 }
