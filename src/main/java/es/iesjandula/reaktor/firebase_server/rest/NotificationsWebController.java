@@ -48,8 +48,7 @@ public class NotificationsWebController
 	        @RequestHeader("fecha_fin") String fechaFin,
 	        @RequestHeader("hora_fin") String horaFin,
 	        @RequestHeader("roles") String roles,
-	        @RequestHeader("nivel") String nivel,
-	        @RequestHeader(value = "imagen", required = false) String imagen) 
+	        @RequestHeader("nivel") String nivel)
 	{
 
 	    try 
@@ -110,10 +109,6 @@ public class NotificationsWebController
 	        notificacionWeb.setTexto(texto);
 	        notificacionWeb.setNivel(nivel.toUpperCase()); // asignación segura
 
-	        if (imagen != null) 
-	        {
-	            notificacionWeb.setTexto(notificacionWeb.getTexto() + "\n[Imagen: " + imagen + "]");
-	        }
 
 	        notificacionWebRepository.saveAndFlush(notificacionWeb);
 
@@ -152,7 +147,6 @@ public class NotificationsWebController
 											   n.getId(),
 											   n.getTexto(),
 											   n.getNivel(),
-											   extraerNombreImagen(n.getTexto()),
 											   n.getFechaInicio(),
 											   n.getHoraInicio(),
 											   n.getFechaFin(),

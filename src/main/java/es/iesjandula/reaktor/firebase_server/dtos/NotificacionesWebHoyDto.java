@@ -13,7 +13,6 @@ public class NotificacionesWebHoyDto
 	private Long id ;
 	private String texto;
     private String nivel;
-    private String imagen;
     private String fechaInicio;
     private String horaInicio;
     private String fechaFin;
@@ -32,7 +31,7 @@ public class NotificacionesWebHoyDto
      * @param horaFin hora de fin de la notificación
      * @param roles roles de la notificación
      */
-    public NotificacionesWebHoyDto(Long id, String texto, String nivel, String imagen, 
+    public NotificacionesWebHoyDto(Long id, String texto, String nivel, 
                                    LocalDate fechaInicio, LocalTime horaInicio, 
                                    LocalDate fechaFin, LocalTime horaFin, 
                                    String roles)
@@ -40,7 +39,6 @@ public class NotificacionesWebHoyDto
         this.id          = id;
         this.texto       = texto;
         this.nivel       = nivel;
-        this.imagen      = imagen;
         this.fechaInicio = fechaInicio != null ? fechaInicio.toString() : "";
         this.horaInicio  = horaInicio != null ? horaInicio.toString() : "";
         this.fechaFin    = fechaFin != null ? fechaFin.toString() : "";
