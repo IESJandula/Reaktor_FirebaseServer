@@ -71,6 +71,13 @@ public class NotificationsWebController
 				log.error(errorMessage);
 	            throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_CREATION, errorMessage);
 	        }
+	        
+	        if (nivel.equalsIgnoreCase(Constants.NIVEL_SECUNDARIO) && texto != null && texto.contains("[Imagen:")) 
+	        {
+	        	String errorMessage = "No se permite adjuntar imagen en notificaciones de nivel SECUNDARIO" ;
+	        	log.error(errorMessage) ;
+	        	throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_CREATION, errorMessage) ;
+			}
 
 			// Validar los roles
 			if (roles == null || roles.isEmpty())
@@ -107,7 +114,7 @@ public class NotificationsWebController
 	        notificacionWeb.setHoraFin(LocalTime.parse(horaFin));
 	        notificacionWeb.setRoles(roles);
 	        notificacionWeb.setTexto(texto);
-	        notificacionWeb.setNivel(nivel.toUpperCase()); // asignación segura
+	        notificacionWeb.setNivel(nivel.toUpperCase()); 
 
 
 	        notificacionWebRepository.saveAndFlush(notificacionWeb);
@@ -131,7 +138,7 @@ public class NotificationsWebController
 
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/obtenerNotificacionesHoy")
-	public ResponseEntity<?> obtenerNotificacionHoy(@RequestHeader("usuario") String usuario)
+	public ResponseEntity<?> obtenerNotificacionHoy(@RequestHeader("usuario") String usuario, @RequestHeader("nivel") String nivel)
 	{
 	    List<NotificacionesWebHoyDto> resultado = new ArrayList<NotificacionesWebHoyDto>();
 		try 
@@ -143,6 +150,7 @@ public class NotificationsWebController
 			if (notificaciones != null && !notificaciones.isEmpty())
 			{
 	        	resultado = notificaciones.stream()
+	        						      .filter(n -> n.getNivel().equalsIgnoreCase(nivel))
 					                      .map(n -> new NotificacionesWebHoyDto(
 											   n.getId(),
 											   n.getTexto(),
