@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class NotificacionWebUsuarioId implements Serializable
+public class NotificacionEmailUsuarioId implements Serializable
 {
 	
 	/**

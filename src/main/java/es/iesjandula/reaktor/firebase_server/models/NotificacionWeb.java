@@ -49,15 +49,4 @@ public class NotificacionWeb
 	@JoinColumn(name = "aplicacion_client_id", nullable = false)
 	private Aplicacion aplicacion ;
 	
-	@OneToMany(mappedBy = "notificacion", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WebNotificacionPara> paraUsuarios;
-
-    // Relación con usuarios en COPIA (CC)
-    @OneToMany(mappedBy = "notificacion", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WebNotificacionCopia> copiaUsuarios;
-
-    // Relación con usuarios en COPIA OCULTA (CCO)
-    @OneToMany(mappedBy = "notificacion", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WebNotificacionCopiaOculta> copiaOcultaUsuarios;
-	
 }

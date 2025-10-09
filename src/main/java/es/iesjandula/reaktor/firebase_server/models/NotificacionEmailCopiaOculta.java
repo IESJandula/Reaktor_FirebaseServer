@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@Table(name = "web_notificacion_copia_oculta")
+@Table(name = "notificacion_email_copia_oculta")
 @AllArgsConstructor
 @NoArgsConstructor
-public class WebNotificacionCopiaOculta 
+public class NotificacionEmailCopiaOculta 
 {
 
 	@EmbeddedId
-	private NotificacionWebUsuarioId id ;
+	private NotificacionEmailUsuarioId id ;
 	
 	@ManyToOne
     @MapsId("notificacionId")
     @JoinColumn(name = "notificacion_id")
-    private NotificacionWeb notificacion;
+    private NotificacionEmail notificacion;
 
     @ManyToOne
     @MapsId("usuarioEmail")
