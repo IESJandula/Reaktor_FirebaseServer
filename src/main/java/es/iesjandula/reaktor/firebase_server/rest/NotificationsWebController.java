@@ -3,6 +3,7 @@ package es.iesjandula.reaktor.firebase_server.rest;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,8 +20,10 @@ import es.iesjandula.reaktor.base.utils.BaseConstants;
 import es.iesjandula.reaktor.firebase_server.dtos.NotificacionesWebHoyDto;
 import es.iesjandula.reaktor.firebase_server.models.Aplicacion;
 import es.iesjandula.reaktor.firebase_server.models.NotificacionWeb;
+import es.iesjandula.reaktor.firebase_server.models.Usuario;
 import es.iesjandula.reaktor.firebase_server.repository.IAplicacionRepository;
 import es.iesjandula.reaktor.firebase_server.repository.INotificacionWebRepository;
+import es.iesjandula.reaktor.firebase_server.repository.IUsuarioRepository;
 import es.iesjandula.reaktor.firebase_server.utils.Constants;
 import es.iesjandula.reaktor.firebase_server.utils.FirebaseServerException;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,9 @@ public class NotificationsWebController
 	
 	@Autowired
 	private INotificacionWebRepository notificacionWebRepository ;
+	
+	@Autowired
+	private IUsuarioRepository usuarioRepository ;
 
 	@RequestMapping(method = RequestMethod.POST, value = "/crearNotificacionWeb")
 	@PreAuthorize("hasRole('" + BaseConstants.ROLE_ADMINISTRADOR + "')")
@@ -138,45 +144,54 @@ public class NotificationsWebController
 
 	
 	@RequestMapping(method = RequestMethod.GET, value = "/obtenerNotificacionesHoy")
-	public ResponseEntity<?> obtenerNotificacionHoy(@RequestHeader("usuario") String usuario, @RequestHeader("nivel") String nivel)
+	public ResponseEntity<?> obtenerNotificacionHoy(@RequestHeader("usuario") String usuario, @RequestHeader("nivel") String nivel) 
 	{
-	    List<NotificacionesWebHoyDto> resultado = new ArrayList<NotificacionesWebHoyDto>();
-		try 
-		{
-			LocalDate hoy = LocalDate.now() ;
-			
-			List<NotificacionWeb> notificaciones = notificacionWebRepository.findByFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(hoy, hoy) ;
-			
-			if (notificaciones != null && !notificaciones.isEmpty())
-			{
-	        	resultado = notificaciones.stream()
-	        						      .filter(n -> n.getNivel().equalsIgnoreCase(nivel))
-					                      .map(n -> new NotificacionesWebHoyDto(
-											   n.getId(),
-											   n.getTexto(),
-											   n.getNivel(),
-											   n.getFechaInicio(),
-											   n.getHoraInicio(),
-											   n.getFechaFin(),
-											   n.getHoraFin(),
-											   String.join(",", n.getRoles())
-							))
-							.collect(Collectors.toList()) ;
-			}
+	    List<NotificacionesWebHoyDto> resultado = new ArrayList<>();
+	    try 
+	    {
+	        LocalDate hoy = LocalDate.now();
 
-			return ResponseEntity.status(200).body(resultado) ;			
-		}
-		catch (Exception exception) 
-		{			
-			String errorMessage = "Error inesperado al obtener las notificaciones" ;
-			log.error(errorMessage, exception) ;
+	        // Obtener todas las notificaciones del día
+	        List<NotificacionWeb> notificaciones = notificacionWebRepository
+	                .findByFechaInicioLessThanEqualAndFechaFinGreaterThanEqual(hoy, hoy);
 
-			FirebaseServerException firebaseServerException = new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, errorMessage, exception) ;
-			return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage()) ;
-		
-		}
-		
+	        if (notificaciones != null && !notificaciones.isEmpty()) 
+	        {
+
+	            // Obtener roles del usuario actual
+	            Usuario usuarioActual = usuarioRepository.findById(usuario).orElse(null);
+	            List<String> rolesUsuario = usuarioActual != null ? usuarioActual.getRolesList() : new ArrayList<>();
+	            boolean esAdminODireccion = rolesUsuario.contains(BaseConstants.ROLE_ADMINISTRADOR)
+	                                     || rolesUsuario.contains(BaseConstants.ROLE_DIRECCION);
+
+	            // Filtrar según nivel y permisos
+	            resultado = notificaciones.stream()
+	            		.filter(n -> esAdminODireccion || nivel.equalsIgnoreCase(Constants.NIVEL_GLOBAL) || n.getAplicacion().getNombre().equals(usuario))
+	                    .map(n -> new NotificacionesWebHoyDto(
+	                            n.getId(),
+	                            n.getTexto(),
+	                            n.getNivel(),
+	                            n.getFechaInicio(),
+	                            n.getHoraInicio(),
+	                            n.getFechaFin(),
+	                            n.getHoraFin(),
+	                            n.getRoles()
+	                    ))
+	                    .collect(Collectors.toList());
+	        }
+
+	        return ResponseEntity.status(200).body(resultado);
+	    } catch (Exception exception) 
+	    {
+	        String errorMessage = "Error inesperado al obtener las notificaciones";
+	        log.error(errorMessage, exception);
+
+	        FirebaseServerException firebaseServerException =
+	                new FirebaseServerException(Constants.ERR_GENERIC_EXCEPTION_CODE, errorMessage, exception);
+	        return ResponseEntity.status(500).body(firebaseServerException.getBodyExceptionMessage());
+	    }
 	}
+
 	
 	// Método auxiliar para obtener nombre de imagen si está dentro del texto
     private String extraerNombreImagen(String texto) 
@@ -190,7 +205,7 @@ public class NotificationsWebController
     
     @RequestMapping(method = RequestMethod.DELETE, value = "/eliminarNotificacionWeb/{id}")
     @PreAuthorize("hasRole('" + BaseConstants.ROLE_ADMINISTRADOR + "')")
-    public ResponseEntity<?> eliminarNotificacionWeb(@PathVariable("id") Long id) 
+    public ResponseEntity<?> eliminarNotificacionWeb(@PathVariable("id") Long id, @RequestHeader("usuario") String emailUsuario) 
     {
         try 
         {
@@ -203,6 +218,26 @@ public class NotificationsWebController
                 log.error(errorMessage);
 
                 throw new FirebaseServerException(Constants.ERR_NOTIFICATIONS_WEB_DELETION, errorMessage);
+            }
+            
+         // Buscar usuario actual y obtener roles
+            Usuario usuario = this.usuarioRepository.findById(emailUsuario).orElse(null);
+            if (usuario == null) {
+                return ResponseEntity.status(403).body("Usuario no autorizado");
+            }
+
+            List<String> rolesUsuario = usuario.getRolesList();
+            List<String> rolesNotificacion = Arrays.asList(notificacion.getRoles().split(","));
+
+            // Verificar permisos
+            boolean esAdminODireccion = rolesUsuario.contains(BaseConstants.ROLE_ADMINISTRADOR)
+                                     || rolesUsuario.contains(BaseConstants.ROLE_DIRECCION);
+
+            boolean esProfesorDestinatario = rolesUsuario.contains(BaseConstants.ROLE_PROFESOR) &&
+                                             rolesUsuario.stream().anyMatch(rolesNotificacion::contains);
+
+            if (!esAdminODireccion && !esProfesorDestinatario) {
+                return ResponseEntity.status(403).body("No tienes permisos para eliminar esta notificación");
             }
 
             // Eliminar
