@@ -2,6 +2,7 @@ package es.iesjandula.reaktor.firebase_server.models;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Date;
 
 import es.iesjandula.reaktor.firebase_server.utils.Constants;
 import jakarta.persistence.Column;
@@ -36,6 +37,10 @@ public class Usuario
 	@Column
 	private String departamento ;
 
+	/** Atributo - Fecha de nacimiento */
+	@Column
+	private String fechaNacimiento ;
+
 	/**
 	 * Constructor por defecto
 	 */
@@ -52,13 +57,14 @@ public class Usuario
 	 * @param roles
 	 * @param departamento
 	 */
-	public Usuario(String email, String nombre, String apellidos, String roles, String departamento)
+	public Usuario(String email, String nombre, String apellidos, String roles, String departamento, String fechaNacimiento)
 	{
-		this.email = email;
-		this.nombre = nombre;
-		this.apellidos = apellidos;
-		this.roles = roles;
-		this.departamento = departamento;
+		this.email           = email ;
+		this.nombre          = nombre ;
+		this.apellidos       = apellidos ;
+		this.roles 			 = roles ;
+		this.departamento    = departamento ;
+		this.fechaNacimiento = fechaNacimiento ;
 	}		
 
 	/**
@@ -105,7 +111,15 @@ public class Usuario
 	{
 		return this.departamento;
 	}
-	
+
+	/**
+	 * Getter para el atributo fecha de nacimiento
+	 * @return la fecha de nacimiento
+	 */
+	public String getFechaNacimiento()
+	{
+		return this.fechaNacimiento;
+	}
 	/**
 	 * Setter para el atributo email
 	 * @param email el email
@@ -149,6 +163,15 @@ public class Usuario
 	public void setDepartamento(String departamento)
 	{
 		this.departamento = departamento;
+	}
+
+	/**
+	 * Setter para el atributo fecha de nacimiento
+	 * @param fechaNacimiento la fecha de nacimiento
+	 */
+	public void setFechaNacimiento(String fechaNacimiento)
+	{
+		this.fechaNacimiento = fechaNacimiento;
 	}
 
     /**

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.iesjandula.reaktor.base.utils.BaseConstants;
+import es.iesjandula.reaktor.base.utils.BaseException;
+import es.iesjandula.reaktor.base.utils.FechasUtils;
 import es.iesjandula.reaktor.firebase_server.models.Aplicacion;
 import es.iesjandula.reaktor.firebase_server.models.Usuario;
 import es.iesjandula.reaktor.firebase_server.repository.IAplicacionRepository;
@@ -141,7 +143,7 @@ public class ImportsManager
 	{
 		String[] fields = linea.split(",") ;
 		
-		if (fields.length != 5)
+		if (fields.length != 6)
 		{
 			String errorString = "Hay una fila del CSV que no posee el número de elementos esperados: " + linea ;
 			
@@ -150,11 +152,12 @@ public class ImportsManager
 		}
 		
 		// Parseamos cada uno de los campos
-		String email 	    = fields[0] ;
-		String nombre 	    = fields[1] ;
-		String apellidos    = fields[2] ;
-		String departamento = fields[3] ;
-		List<String> roles = Arrays.asList(fields[4].split("\\|")) ;
+		String email 	       = fields[0] ;
+		String nombre 	       = fields[1] ;
+		String apellidos       = fields[2] ;
+		String departamento    = fields[3] ;
+		String fechaNacimiento = fields[4] ;
+		List<String> roles     = Arrays.asList(fields[5].split("\\|")) ;
 		
 		// Validamos roles del usuario
 		for (String role : roles)
@@ -169,15 +172,17 @@ public class ImportsManager
 			}
 		}
 		
-		// Creamos una instancia del usuario y seteamos los campos
+		// Creamos una instancia del usuario
 		Usuario usuario = new Usuario() ;
-		
+
+		// Seteamos los campos
 		usuario.setEmail(email) ;
 		usuario.setNombre(nombre) ;
 		usuario.setApellidos(apellidos) ;
 		usuario.setDepartamento(departamento) ;
+		usuario.setFechaNacimiento(fechaNacimiento) ;
 		usuario.setRolesList(roles) ;
-		
+
 		// Devolvemos una instancia del usuario
 		return usuario ;
 	}

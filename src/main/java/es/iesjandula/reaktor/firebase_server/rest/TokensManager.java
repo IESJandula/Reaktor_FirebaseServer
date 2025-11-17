@@ -91,10 +91,12 @@ public class TokensManager
             // Creamos claims personalizados basados en la información obtenida
             Map<String, Object> customClaims = new HashMap<String, Object>() ;
             
-            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_EMAIL, 	  usuario.getEmail()) ;
-            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_NOMBRE, 	  usuario.getNombre()) ;
-            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_APELLIDOS, usuario.getApellidos()) ;
-            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_ROLES, 	  usuario.getRolesList()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_EMAIL, 	         usuario.getEmail()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_NOMBRE, 	         usuario.getNombre()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_APELLIDOS,        usuario.getApellidos()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_DEPARTAMENTO,     usuario.getDepartamento()) ;
+			customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_FECHA_NACIMIENTO, usuario.getFechaNacimiento()) ;
+            customClaims.put(BaseConstants.JWT_ATTR_USUARIOS_ATTRIBUTE_ROLES, 	         usuario.getRolesList()) ;
 
             // Firmamos el JWT con la clave privada
             String tokenJwt = Jwts.builder().subject(decodedToken.getUid())

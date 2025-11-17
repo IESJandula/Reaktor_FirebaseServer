@@ -31,7 +31,5 @@ public class Constants
 	
 	/** Error - Error en la importación de aplicaciones */
 	public static final int ERR_APPS_IMPORTS					  = 105 ;
-	
-	
 }
 
