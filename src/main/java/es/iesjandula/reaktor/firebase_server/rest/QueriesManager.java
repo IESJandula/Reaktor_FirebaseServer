@@ -29,7 +29,7 @@ public class QueriesManager
 	@Autowired
 	private IUsuarioRepository usuarioRepository ;
 	
-    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_ADMINISTRADOR + "', '" + BaseConstants.ROLE_DIRECCION + "')")
+    @PreAuthorize("hasAnyRole('" + BaseConstants.ROLE_ADMINISTRADOR + "', '" + BaseConstants.ROLE_DIRECCION + "', '" + BaseConstants.ROLE_APLICACION_NOTIFICACIONES + "')")
 	@RequestMapping(method = RequestMethod.GET, value = "/users")
     public ResponseEntity<?> obtenerInfoUsuarios()
 	{
