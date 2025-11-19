@@ -2,7 +2,6 @@ package es.iesjandula.reaktor.firebase_server.models;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Date;
 
 import es.iesjandula.reaktor.firebase_server.utils.Constants;
 import jakarta.persistence.Column;
