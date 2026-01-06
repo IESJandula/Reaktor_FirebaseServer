@@ -4,9 +4,7 @@ package es.iesjandula.reaktor.firebase_server.utils;
  * @author Francisco Manuel Benítez Chico
  */
 public class Constants
-{
-	public static final String STRING_COMA = "," ;
-	
+{	
 	/*********************************************************/
 	/*********************** Errores *************************/
 	/*********************************************************/
