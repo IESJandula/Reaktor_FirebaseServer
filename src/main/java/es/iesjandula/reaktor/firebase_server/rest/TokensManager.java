@@ -8,7 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -46,6 +48,9 @@ public class TokensManager
 
 	@Value("${reaktor.privateKeyFile}")
 	private String privateKeyFile ;
+
+	@Value("${reaktor.caducidadToken}")
+	private int caducidadToken ;
 	
 	@Autowired
 	private IUsuarioRepository usuarioRepository ;
@@ -150,9 +155,17 @@ public class TokensManager
             customClaims.put(BaseConstants.JWT_ATTR_APLICACIONES_ATTRIBUTE_NOMBRE, aplicacion.getNombre()) ;
             customClaims.put(BaseConstants.JWT_ATTR_APLICACIONES_ATTRIBUTE_ROLES, aplicacion.getRolesList()) ;
 
+			// Ahora
+			Instant ahora = Instant.now();
+
+			// Caducidad en X minutos
+			Instant expiracion = ahora.plusSeconds(this.caducidadToken * 60);
+
             // Firmamos el JWT con la clave privada
             String tokenJwt = Jwts.builder().subject(clientId)
 						                    .claims(customClaims)
+											.issuedAt(Date.from(ahora))
+											.expiration(Date.from(expiracion))
 						                    .signWith(this.obtenerClavePrivada(), Jwts.SIG.RS256)
 						                    .compact() ;
 

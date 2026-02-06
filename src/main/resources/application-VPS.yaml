@@ -23,3 +23,4 @@ reaktor:
   privateKeyFile: ${PRIVATE_KEY_FILE}
   googleCredentialsFile: ${GOOGLE_CREDENTIALS_FILE}
   urlCors: https://somos.iesjandula.es
+  caducidadToken: 15
