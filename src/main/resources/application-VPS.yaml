@@ -1,5 +1,12 @@
 spring:
-  jpa.hibernate.ddl-auto: update
+  application:
+    name: reaktor-firebaseserver
+  jpa.hibernate.ddl-auto: validate
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
   datasource:
     url: jdbc:mysql://localhost:3306/reaktor_firebaseserver
     username: root
